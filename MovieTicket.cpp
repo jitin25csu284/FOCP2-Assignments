@@ -1,84 +1,98 @@
-#include<bits/stdc++.h>
+#include <iostream>
+#include <string>
+#include <unordered_map>
+#include <unordered_set>
+
 using namespace std;
 
-class MovieTicket{
-    map<int,set<int>> movieCustomers;
-    map<int,int> availableSlots;
-    
-    public:
-    
-    bool BOOK(int x, int y){
-        if(availableSlots.find(y)==availableSlots.end()){
-            availableSlots[y]=100;
-        }
-        if(availableSlots[y]<=0){
+class MovieTicketSystem {
+private:
+    // Map of MovieID -> Set of UserIDs who booked that movie
+    unordered_map<int, unordered_set<int>> movieBookings;
+    const int MAX_TICKETS = 100;
+
+public:
+    // BOOK X Y
+    // Returns true if booking successful, false if full or already booked
+    bool book(int userID, int movieID) {
+        auto& bookedUsers = movieBookings[movieID];
+
+        // Check if movie is full or user is already booked
+        if (bookedUsers.size() >= MAX_TICKETS || bookedUsers.count(userID)) {
             return false;
         }
-        if(movieCustomers[y].count(x)){
-            return false;
-        }
-        movieCustomers[y].insert(x);
-        availableSlots[y]--;
+
+        bookedUsers.insert(userID);
         return true;
     }
-    
-    bool CANCEL(int x, int y){
-        if(!movieCustomers[y].count(x)){
+
+    // CANCEL X Y
+    // Returns true if cancellation successful, false if booking didn't exist
+    bool cancel(int userID, int movieID) {
+        // If the movie has no bookings, nothing to cancel
+        if (movieBookings.find(movieID) == movieBookings.end()) {
             return false;
         }
-        movieCustomers[y].erase(x);
-        if(availableSlots.find(y)==availableSlots.end()){
-            availableSlots[y]=100;
-        }
-        availableSlots[y]++;
-        return true;
+        
+        // erase returns 1 if element was found and removed, 0 otherwise
+        return movieBookings[movieID].erase(userID) > 0;
     }
-    
-    bool IS_BOOKED(int x, int y){
-        if(movieCustomers[y].count(x)){
-            return true;
+
+    // IS_BOOKED X Y
+    // Returns true if booking exists, false otherwise
+    bool isBooked(int userID, int movieID) {
+        if (movieBookings.find(movieID) == movieBookings.end()) {
+            return false;
         }
-        return false;
+        return movieBookings[movieID].count(userID) > 0;
     }
-    
-    int AVAILABLE_TICKETS(int y){
-        if(availableSlots.find(y)==availableSlots.end()){
-            return 100;
+
+    // AVAILABLE_TICKETS Y
+    // Returns count of remaining tickets
+    int availableTickets(int movieID) {
+        if (movieBookings.find(movieID) == movieBookings.end()) {
+            return MAX_TICKETS;
         }
-        return availableSlots[y];
+        return MAX_TICKETS - movieBookings[movieID].size();
     }
 };
 
-int main(){
-    int q;
-    cin>>q;
-    MovieTicket mt;
-    while(q--){
-        string type;
-        cin>>type;
-        if(type=="BOOK"){
-            int x,y;
-            cin>>x>>y;
-            if(mt.BOOK(x,y)) cout<<"true"<<endl;
-            else cout<<"false"<<endl;
-        }
-        else if(type=="CANCEL"){
-            int x,y;
-            cin>>x>>y;
-            if(mt.CANCEL(x,y)) cout<<"true"<<endl;
-            else cout<<"false"<<endl;
-        }
-        else if(type=="IS_BOOKED"){
-            int x,y;
-            cin>>x>>y;
-            if(mt.IS_BOOKED(x,y)) cout<<"true"<<endl;
-            else cout<<"false"<<endl;
-        }
-        else if(type=="AVAILABLE_TICKETS"){
-            int y;
-            cin>>y;
-            cout<<mt.AVAILABLE_TICKETS(y)<<endl;
+int main() {
+    // Optimization: Disconnect C++ streams from C stdio for speed
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+
+    MovieTicketSystem system;
+    int Q;
+    
+    // Using flush ensures the text appears before the program pauses for input
+    cout << "Enter Q: " << flush;
+    cin >> Q;
+
+    string command;
+    int x, y;
+
+    while (Q--) {
+        cout << "Enter command: " << flush;
+        cin >> command;
+
+        if (command == "BOOK") {
+            cin >> x >> y;
+            cout << (system.book(x, y) ? "true" : "false") << "\n";
+        } 
+        else if (command == "CANCEL") {
+            cin >> x >> y;
+            cout << (system.cancel(x, y) ? "true" : "false") << "\n";
+        } 
+        else if (command == "IS_BOOKED") {
+            cin >> x >> y;
+            cout << (system.isBooked(x, y) ? "true" : "false") << "\n";
+        } 
+        else if (command == "AVAILABLE_TICKETS") {
+            cin >> y;
+            cout << system.availableTickets(y) << "\n";
         }
     }
+
     return 0;
 }
