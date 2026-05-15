@@ -1,80 +1,47 @@
-#include<bits/stdc++.h>
+#include <iostream>
 using namespace std;
+/* creating bank -bankaccno and balance functions show balance deposit and withdrawl */
+class bank{
+  private:
+  float balance=0;
+  int accountno;
+  public:
+   void deposit(int amount ){
+    balance =balance+amount ;
+   }
+   void withdrawal(int amount){
+    balance=balance-amount;
+   }
+   void display(){
+    cout<<"CURRENT BALANCE:"<<balance;
+   }
 
-class Bank{
-    map<int,long long> accounts;
-    
-    public:
-    
-    bool CREATE(int x, long long y){
-        if(accounts.find(x)!=accounts.end()){
-            accounts[x]+=y;
-            return false;
-        }
-        accounts[x]=y;
-        return true;
-    }
-    
-    bool DEBIT(int x, long long y){
-        if(accounts.find(x)==accounts.end()){
-            return false;
-        }
-        if(accounts[x]<y){
-            return false;
-        }
-        accounts[x]-=y;
-        return true;
-    }
-    
-    bool CREDIT(int x, long long y){
-        if(accounts.find(x)==accounts.end()){
-            return false;
-        }
-        accounts[x]+=y;
-        return true;
-    }
-    
-    long long BALANCE(int x){
-        if(accounts.find(x)==accounts.end()){
-            return -1;
-        }
-        return accounts[x];
-    }
+
 };
 
 int main(){
-    int q;
-    cin>>q;
-    Bank b;
-    while(q--){
-        string type;
-        cin>>type;
-        if(type=="CREATE"){
-            int x;
-            long long y;
-            cin>>x>>y;
-            if(b.CREATE(x,y)) cout<<"true"<<endl;
-            else cout<<"false"<<endl;
-        }
-        else if(type=="DEBIT"){
-            int x;
-            long long y;
-            cin>>x>>y;
-            if(b.DEBIT(x,y)) cout<<"true"<<endl;
-            else cout<<"false"<<endl;
-        }
-        else if(type=="CREDIT"){
-            int x;
-            long long y;
-            cin>>x>>y;
-            if(b.CREDIT(x,y)) cout<<"true"<<endl;
-            else cout<<"false"<<endl;
-        }
-        else if(type=="BALANCE"){
-            int x;
-            cin>>x;
-            cout<<b.BALANCE(x)<<endl;
-        }
-    }
-    return 0;
+  int choice;
+  bank b1;
+  cout<<"CHOOSE"<<endl<<"1. Deposit "<<endl<<"2. Withdrawal"<<endl<<"3. Display Balance"<<endl;
+  cin>>choice;
+  if(choice==1){
+    int amount;
+    cout<<"Enter the amount";
+    cin>>amount;
+    b1.deposit(amount);
+    cout<<"Balance updated;";
+
+  }
+  else if (choice==2){
+     int amount;
+    cout<<"Enter the amount";
+    cin>>amount;
+    b1.withdrawal(amount);
+    cout<<"Balance updated;";
+
+  }
+  else{
+    b1.display();
+  }
+return 0;
 }
